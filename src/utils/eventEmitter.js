@@ -1,7 +1,7 @@
 export default class EventEmitter {
-#callbacks = new Map()
+  #callbacks = new Map()
 
-  constructor() {}
+  constructor() { }
 
   /**
    * @methed listen
@@ -11,7 +11,7 @@ export default class EventEmitter {
    */
   on(type, callback) {
     if (!this.#callbacks.has(type)) {
-      this.#callbacks.set(type, []) 
+      this.#callbacks.set(type, [])
     }
     this.#callbacks.get(type).push(callback)
     return this
@@ -47,7 +47,7 @@ export default class EventEmitter {
     const fns = this.#callbacks.get(type)
     if (fns) {
       const args = [...arguments].splice(1)
-      for(const fn of fns) {
+      for (const fn of fns) {
         fn(...args)
       }
     }

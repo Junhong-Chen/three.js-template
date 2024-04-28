@@ -34,7 +34,7 @@ export default class Sizes extends EventEmitter {
     this.emit('resize')
   }
 
-  destroy () {
+  destroy() {
     window.removeEventListener('resize', this.resize, false)
   }
 }

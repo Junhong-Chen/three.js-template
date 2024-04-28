@@ -19,7 +19,7 @@ export default class Debugger {
   hashChange = () => {
     if (location.hash.includes('debug')) {
       this.#gui = new GUI()
-    } else if(this.#gui) {
+    } else if (this.#gui) {
       this.#gui.destroy()
       this.#gui = null
     }

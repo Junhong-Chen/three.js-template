@@ -10,7 +10,7 @@ export default class Loader extends EventEmitter {
 
   constructor(sources) {
     super()
-  
+
     this.#loadTotal = sources.reduce((accumulator, currentValue) => accumulator + currentValue.paths.length, 0)
     this.#loadedTotal = 0
 
@@ -24,17 +24,17 @@ export default class Loader extends EventEmitter {
   }
 
   load(sources) {
-    for(const { name, type, paths } of sources) {
+    for (const { name, type, paths } of sources) {
       for (const path of paths) {
         this.#loaders[type].load(path, (file) => {
           file.name = file.name || path.match(/\/(\S+)\./).pop()
-          this.loaded({name, type, file})
+          this.loaded({ name, type, file })
         })
       }
     }
   }
 
-  loaded({name, type, file}) {
+  loaded({ name, type, file }) {
     if (!this.#files.has(name)) {
       this.#files.set(name, [])
     }
@@ -43,7 +43,7 @@ export default class Loader extends EventEmitter {
       file
     })
 
-    
+
     this.#loadedTotal++
     if (this.#loadTotal === this.#loadedTotal) {
       this.emit('loaded', this.#files)

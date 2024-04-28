@@ -1,4 +1,4 @@
-import { AnimationMixer, BufferAttribute, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, PlaneGeometry, RawShaderMaterial, SRGBColorSpace, Vector2 } from "three"
+import { AnimationMixer, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, PlaneGeometry, RawShaderMaterial, SRGBColorSpace, Vector2 } from "three"
 import Light from "./light"
 import vertexShader from "../shaders/wave/vertex.vs.glsl"
 import fragmentShader from "../shaders/wave/fragment.fs.glsl"
@@ -19,12 +19,12 @@ export default class World {
 
   init(sources) {
     for (const source of sources.values()) {
-      switch(source[0].type) {
+      switch (source[0].type) {
         case 'gltf':
           this.addModel(...source)
           break
         case 'texture':
-          const textures = source.map(el => el.file)
+          // const textures = source.map(el => el.file)
           // this.addTexture(textures)
           break
       }
@@ -38,14 +38,14 @@ export default class World {
     }
   }
 
-  addModel ({ file: model }) {
+  addModel({ file: model }) {
     model.scene.traverse((obj) => {
       if (obj.isMesh && obj.material.isMeshStandardMaterial) {
         obj.castShadow = true
         obj.receiveShadow = true
       }
     })
-    
+
     // fox
     if (model.name === 'fox') {
       model.scene.scale.set(0.02, 0.02, 0.02)
@@ -75,7 +75,7 @@ export default class World {
       mixer,
       actions
     })
-    
+
     actions[active].play()
 
     if (this.#debugger.gui) {
@@ -137,7 +137,7 @@ export default class World {
       folder.add(material.uniforms.uFrequency.value, 'y').min(0).max(10).name('frequencyY')
     }
 
-    this.#time.on('tick', function({ elapsedTime }) {
+    this.#time.on('tick', function ({ elapsedTime }) {
       material.uniforms.uTime.value = elapsedTime
     })
 
@@ -153,16 +153,16 @@ export default class World {
   }
 
   destroy() {
-		this.#scene.traverse(child => {
-			if (child.isMesh) {
-				child.geometry.dispose()
+    this.#scene.traverse(child => {
+      if (child.isMesh) {
+        child.geometry.dispose()
         for (const key in child.material) {
           const value = child.material[key]
           if (value && value.dispose instanceof Function) {
             value.dispose()
           }
         }
-			}
-		})
+      }
+    })
   }
 }

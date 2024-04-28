@@ -27,6 +27,6 @@ export default class Time extends EventEmitter {
   }
 
   destroy() {
-    cancelAnimationFrame(this.#id)
+    window.cancelAnimationFrame(this.#id)
   }
 }
