@@ -7,11 +7,18 @@ export default [
       "textures/floor-normal.jpg"
     ]
   },
+  // {
+  //   name: "fox",
+  //   type: "gltf",
+  //   paths: [
+  //     "models/fox.glb"
+  //   ]
+  // },
   {
-    name: "fox",
+    name: "brainStem",
     type: "gltf",
     paths: [
-      "models/fox.glb"
+      "models/BrainStem.gltf"
     ]
   }
 ]

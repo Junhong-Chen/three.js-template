@@ -1,5 +1,6 @@
 import { TextureLoader } from "three"
 import { GLTFLoader } from "three/examples/jsm/Addons.js"
+import { DRACOLoader } from "three/examples/jsm/Addons.js"
 import EventEmitter from "./eventEmitter"
 
 export default class Loader extends EventEmitter {
@@ -19,7 +20,10 @@ export default class Loader extends EventEmitter {
   }
 
   init() {
+    const dLoader = new DRACOLoader()
+    dLoader.setDecoderPath('/loader/draco/')
     this.#loaders.gltf = new GLTFLoader()
+    this.#loaders.gltf.setDRACOLoader(dLoader)
     this.#loaders.texture = new TextureLoader()
   }
 

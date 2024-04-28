@@ -1,4 +1,4 @@
-import { AnimationMixer, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, PlaneGeometry, RawShaderMaterial, SRGBColorSpace, Vector2 } from "three"
+import { AnimationMixer, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, RawShaderMaterial, RingGeometry, SRGBColorSpace, Vector2 } from "three"
 import Light from "./light"
 import vertexShader from "../shaders/wave/vertex.vs.glsl"
 import fragmentShader from "../shaders/wave/fragment.fs.glsl"
@@ -49,6 +49,7 @@ export default class World {
     // fox
     if (model.name === 'fox') {
       model.scene.scale.set(0.02, 0.02, 0.02)
+      model.scene.position.y = 0.01
     }
     this.#scene.add(model.scene)
 
@@ -118,7 +119,7 @@ export default class World {
   }
 
   addShader() {
-    const geometry = new PlaneGeometry(2, 2, 32, 32)
+    const geometry = new RingGeometry(2)
 
     const material = new RawShaderMaterial({
       vertexShader,
@@ -126,15 +127,15 @@ export default class World {
       side: DoubleSide,
       transparent: true,
       uniforms: {
-        uFrequency: { value: new Vector2(5, 5) },
+        uFrequency: { value: new Vector2(2, 2) },
         uTime: { value: this.#time.elapsed }
       }
     })
 
     if (this.#debugger.gui) {
       const folder = this.#debugger.gui.addFolder('WAVE')
-      folder.add(material.uniforms.uFrequency.value, 'x').min(0).max(10).name('frequencyX')
-      folder.add(material.uniforms.uFrequency.value, 'y').min(0).max(10).name('frequencyY')
+      folder.add(material.uniforms.uFrequency.value, 'x').min(0).max(4).step(1).name('frequencyX')
+      folder.add(material.uniforms.uFrequency.value, 'y').min(0).max(4).step(1).name('frequencyY')
     }
 
     this.#time.on('tick', function ({ elapsedTime }) {
@@ -145,10 +146,7 @@ export default class World {
       geometry,
       material
     )
-    plane.position.set(0, 0.01, 0)
     plane.rotation.x = -Math.PI / 2
-    plane.castShadow = true
-    plane.receiveShadow = true
     this.#scene.add(plane)
   }
 
