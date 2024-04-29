@@ -4,7 +4,7 @@ export default class Music {
   #dataArray
 
   get analyser() {
-    if (this.#analyser) this.#analyser.getByteTimeDomainData(this.#dataArray)
+    if (this.#analyser) this.#analyser.getByteFrequencyData(this.#dataArray)
     return this.#dataArray || []
   }
 
@@ -14,7 +14,7 @@ export default class Music {
 
   init() {
     const autoPlay = () => {
-      this.#audio = new Audio('/music/music.mp3')
+      this.#audio = new Audio('/audio/music.mp3')
       this.#audio.setAttribute('loop', true)
   
       const audioCtx = new window.AudioContext()

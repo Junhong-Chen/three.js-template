@@ -133,7 +133,6 @@ export default class World {
       uniforms: {
         uFrequency: { value: new Vector2(2, 2) },
         uTime: { value: this.#time.elapsed },
-        uAmplitude: { value: 1 }
       }
     })
 
@@ -143,20 +142,23 @@ export default class World {
       folder.add(material.uniforms.uFrequency.value, 'y').min(0).max(4).step(1).name('frequencyY')
     }
 
-    this.#time.on('tick', ({ elapsedTime }) => {
-      material.uniforms.uTime.value = elapsedTime
-
-      const dataArray = this.music.analyser
-      const bufferLength = dataArray.length
-      if (dataArray.length) material.uniforms.uAmplitude.value = dataArray.reduce((p, c) => p + c) / bufferLength / 128 // magic number
-    })
-
     const plane = new Mesh(
       geometry,
       material
     )
     plane.rotation.x = -Math.PI / 2
     this.#scene.add(plane)
+
+    this.#time.on('tick', ({ elapsedTime }) => {
+      material.uniforms.uTime.value = elapsedTime
+
+      const dataArray = this.music.analyser
+      const bufferLength = dataArray.length
+      if (bufferLength) {
+        const amplitude = 1 + dataArray.reduce((p, c) => p + c) / bufferLength / 512 // magic number
+        plane.scale.set(amplitude, amplitude, 0)
+      }
+    })
   }
 
   destroy() {
