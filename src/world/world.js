@@ -155,7 +155,9 @@ export default class World {
       const dataArray = this.music.analyser
       const bufferLength = dataArray.length
       if (bufferLength) {
-        const amplitude = 1 + dataArray.reduce((p, c) => p + c) / bufferLength / 512 // magic number
+         // magic number
+        // const amplitude = 1 + dataArray.reduce((p, c) => p + c) / bufferLength / 512
+        const amplitude = 1 + dataArray[8] / 512
         plane.scale.set(amplitude, amplitude, 0)
       }
     })
