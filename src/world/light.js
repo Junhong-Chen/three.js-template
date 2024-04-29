@@ -15,12 +15,12 @@ export default class Light {
   }
 
   addAmbientLight() {
-    const aLight = new AmbientLight('white', 0.08)
+    const aLight = new AmbientLight('white', 0.2)
     this.#scene.add(aLight)
   }
 
   addDirectionalLight() {
-    const dLight = new DirectionalLight('white', 2)
+    const dLight = new DirectionalLight('white', 3)
     dLight.position.set(4, 4, 4)
     dLight.castShadow = true
     dLight.shadow.camera.far = 16

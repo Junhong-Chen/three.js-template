@@ -22,7 +22,7 @@ class App {
     const { width, height, pixelRatio } = this.sizes
 
     this.camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
-    this.camera.position.set(0, 4, 4)
+    this.camera.position.set(2, 3, 4)
 
     this.renderer = new WebGLRenderer({
       antialias: true
@@ -39,7 +39,7 @@ class App {
     this.time.on('tick', this.update)
 
     this.loader.on('loaded', (sources) => {
-      this.world.init(sources)
+      this.world.load(sources)
     })
 
     window.addEventListener('beforeunload', this.destroy, false)

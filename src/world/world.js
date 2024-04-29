@@ -1,7 +1,8 @@
-import { AnimationMixer, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, RawShaderMaterial, RingGeometry, SRGBColorSpace, Vector2 } from "three"
-import Light from "./light"
+import { AnimationMixer, BufferAttribute, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, RawShaderMaterial, RingGeometry, SRGBColorSpace, Vector2 } from "three"
 import vertexShader from "../shaders/wave/vertex.vs.glsl"
 import fragmentShader from "../shaders/wave/fragment.fs.glsl"
+import Light from "./light"
+import Music from "./music"
 
 export default class World {
   #scene
@@ -13,11 +14,15 @@ export default class World {
     this.#scene = app.scene
     this.#debugger = app.debugger
     this.#time = app.time
-
-    this.light = new Light(app)
+    this.init(app)
   }
 
-  init(sources) {
+  init(app) {
+    this.light = new Light(app)
+    this.music = new Music()
+  }
+
+  load(sources) {
     for (const source of sources.values()) {
       switch (source[0].type) {
         case 'gltf':
@@ -119,8 +124,7 @@ export default class World {
   }
 
   addShader() {
-    const geometry = new RingGeometry(2)
-
+    const geometry = new RingGeometry(2, 1, 128)
     const material = new RawShaderMaterial({
       vertexShader,
       fragmentShader,
@@ -128,7 +132,8 @@ export default class World {
       transparent: true,
       uniforms: {
         uFrequency: { value: new Vector2(2, 2) },
-        uTime: { value: this.#time.elapsed }
+        uTime: { value: this.#time.elapsed },
+        uAmplitude: { value: 1 }
       }
     })
 
@@ -138,8 +143,12 @@ export default class World {
       folder.add(material.uniforms.uFrequency.value, 'y').min(0).max(4).step(1).name('frequencyY')
     }
 
-    this.#time.on('tick', function ({ elapsedTime }) {
+    this.#time.on('tick', ({ elapsedTime }) => {
       material.uniforms.uTime.value = elapsedTime
+
+      const dataArray = this.music.analyser
+      const bufferLength = dataArray.length
+      if (dataArray.length) material.uniforms.uAmplitude.value = dataArray.reduce((p, c) => p + c) / bufferLength / 128
     })
 
     const plane = new Mesh(
