@@ -13,7 +13,7 @@ varying vec2 vuv;
 
 void main() {
   vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-  float range = pow(uAmplitude, 0.4);
+  float range = pow(uAmplitude > 1.25 ? uAmplitude : 1.0, 0.25);
 
   modelPosition.x += sin(modelPosition.z * uFrequency.x * range + uTime) * 0.1;
   modelPosition.x += cos(modelPosition.z * uFrequency.y * range + uTime) * 0.1;

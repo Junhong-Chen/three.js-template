@@ -148,7 +148,7 @@ export default class World {
 
       const dataArray = this.music.analyser
       const bufferLength = dataArray.length
-      if (dataArray.length) material.uniforms.uAmplitude.value = dataArray.reduce((p, c) => p + c) / bufferLength / 128
+      if (dataArray.length) material.uniforms.uAmplitude.value = dataArray.reduce((p, c) => p + c) / bufferLength / 128 // magic number
     })
 
     const plane = new Mesh(
