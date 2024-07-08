@@ -16,7 +16,7 @@ class App {
     this.scene = new Scene()
     this.sizes = new Sizes()
     this.time = new Time()
-    this.loader = new Loader(sources)
+    this.loader = new Loader(sources, this.scene)
     this.world = new World(this)
 
     const { width, height, pixelRatio } = this.sizes

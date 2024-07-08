@@ -2,6 +2,7 @@ import { TextureLoader } from "three"
 import { GLTFLoader } from "three/examples/jsm/Addons.js"
 import { DRACOLoader } from "three/examples/jsm/Addons.js"
 import EventEmitter from "./eventEmitter"
+import Loading from "./loading"
 
 export default class Loader extends EventEmitter {
   #loaders = {}
@@ -9,22 +10,23 @@ export default class Loader extends EventEmitter {
   #loadTotal
   #loadedTotal
 
-  constructor(sources) {
+  constructor(sources, scene) {
     super()
 
     this.#loadTotal = sources.reduce((accumulator, currentValue) => accumulator + currentValue.paths.length, 0)
     this.#loadedTotal = 0
 
-    this.init()
+    this.init(scene)
     this.load(sources)
   }
 
-  init() {
+  init(scene) {
+    const loading = new Loading(scene)
     const dLoader = new DRACOLoader()
     dLoader.setDecoderPath('/loader/draco/')
-    this.#loaders.gltf = new GLTFLoader()
+    this.#loaders.gltf = new GLTFLoader(loading.manager)
     this.#loaders.gltf.setDRACOLoader(dLoader)
-    this.#loaders.texture = new TextureLoader()
+    this.#loaders.texture = new TextureLoader(loading.manager)
   }
 
   load(sources) {

@@ -1,11 +1,11 @@
 precision mediump float;
 
-varying vec2 vuv;
 varying float vTime;
-
-mat2 rotation;
+varying vec2 vUv;
 
 void main() {
-  rotation = mat2(cos(vTime), -sin(vTime), sin(vTime), cos(vTime));
-  gl_FragColor = vec4((vuv - 0.5) * rotation, 0.5, 1.0);
+  vec3 color = vec3(.0);
+  color = vec3(vUv, abs(sin(vTime)));
+
+  gl_FragColor = vec4(color * 0.5 + 0.3, 1.0);
 }
