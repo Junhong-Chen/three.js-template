@@ -11,7 +11,7 @@ npm run dev
 npm run build
 ```
 
-# Plugin
+# VSCode Extensions
 
 -[GLSL Lint](https://marketplace.visualstudio.com/items?itemName=dtoplak.vscode-glsllint)
 
