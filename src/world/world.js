@@ -1,170 +1,52 @@
-import { AnimationMixer, BufferAttribute, CircleGeometry, DoubleSide, Mesh, MeshStandardMaterial, RawShaderMaterial, RingGeometry, SRGBColorSpace, Vector2 } from "three"
-import vertexShader from "../shaders/wave/vertex.vs.glsl"
-import fragmentShader from "../shaders/wave/fragment.fs.glsl"
 import Light from "./light"
 import Music from "./music"
+import Floor from "./floor"
+import Player from "./player"
 
 export default class World {
-  #scene
-  #debugger
-  #time
-  #animations = []
+  #fns = []
 
   constructor(app) {
-    this.#scene = app.scene
-    this.#debugger = app.debugger
-    this.#time = app.time
-    this.init(app)
+    this.scene = app.scene
+    this.time = app.time
+
+    this.resources
+
+    this.init()
   }
 
-  init(app) {
-    this.light = new Light(app)
+  init() {
     this.music = new Music()
+    this.light = new Light(this)
+    this.floor = new Floor(this)
   }
 
-  load(sources) {
-    for (const source of sources.values()) {
-      switch (source[0].type) {
-        case 'gltf':
-          this.addModel(...source)
-          break
-        case 'texture':
-          // const textures = source.map(el => el.file)
-          // this.addTexture(textures)
-          break
-      }
+  load(resources) {
+
+    this.res = resources
+    this.player = new Player(this)
+  }
+
+  addUpdateFn(fn) {
+    this.#fns.push(fn)
+  }
+
+  removeUpdateFn(fn) {
+    const i = this.#fns.findIndex(f => f === fn)
+
+    if (i > -1) {
+      this.#fns.splice(i, 1)
     }
-    this.addShader()
   }
 
   update(deltaTime) {
-    for (const animation of this.#animations) {
-      animation.mixer.update(deltaTime)
-    }
-  }
-
-  addModel({ file: model }) {
-    model.scene.traverse((obj) => {
-      if (obj.isMesh && obj.material.isMeshStandardMaterial) {
-        obj.castShadow = true
-        obj.receiveShadow = true
-      }
-    })
-
-    // fox
-    if (model.name === 'fox') {
-      model.scene.scale.set(0.02, 0.02, 0.02)
-      model.scene.position.y = 0.01
-    }
-    this.#scene.add(model.scene)
-
-    if (model.animations.length) {
-      this.addAnimation(model)
-    }
-  }
-
-  addAnimation(model) {
-    const mixer = new AnimationMixer(model.scene)
-    const actions = {}
-    let active
-
-    for (let i = 0; i < model.animations.length; i++) {
-      const clip = model.animations[i]
-      const name = clip.name || i
-      actions[name] = mixer.clipAction(clip)
-      if (i === 0) {
-        active = name
-      }
-    }
-
-    this.#animations.push({
-      mixer,
-      actions
-    })
-
-    actions[active].play()
-
-    if (this.#debugger.gui) {
-      const folder = this.#debugger.gui.addFolder(model.name.toUpperCase())
-      const guiParams = {
-        action: active
-      }
-      const actionsName = Object.keys(actions)
-
-      folder.add(guiParams, 'action', actionsName).onFinishChange((name) => {
-        const oldAcion = actions[active]
-        const newAcion = actions[name]
-        active = name
-
-        newAcion.reset()
-        newAcion.play()
-        newAcion.crossFadeFrom(oldAcion, 1)
-      })
-    }
-  }
-
-  addTexture(textures) {
-    // floor
-    const map = textures.find(texture => texture.name === 'floor-color')
-    const normalMap = textures.find(texture => texture.name === 'floor-normal')
-
-    map.colorSpace = SRGBColorSpace
-
-    const floor = new Mesh(
-      new CircleGeometry(5),
-      new MeshStandardMaterial({
-        map,
-        normalMap
-      })
-    )
-    floor.rotation.x = -Math.PI / 2
-    floor.receiveShadow = true
-
-    this.#scene.add(floor)
-  }
-
-  addShader() {
-    const geometry = new RingGeometry(2, 1, 128)
-    const material = new RawShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      side: DoubleSide,
-      transparent: true,
-      uniforms: {
-        uFrequency: { value: new Vector2(2, 2) },
-        uTime: { value: this.#time.elapsed },
-      }
-    })
-
-    if (this.#debugger.gui) {
-      const folder = this.#debugger.gui.addFolder('WAVE')
-      folder.add(material.uniforms.uFrequency.value, 'x').min(0).max(4).step(1).name('frequencyX')
-      folder.add(material.uniforms.uFrequency.value, 'y').min(0).max(4).step(1).name('frequencyY')
-    }
-
-    const plane = new Mesh(
-      geometry,
-      material
-    )
-    plane.rotation.x = -Math.PI / 2
-    this.#scene.add(plane)
-
-    this.#time.on('tick', ({ elapsedTime }) => {
-      material.uniforms.uTime.value = elapsedTime
-
-      const dataArray = this.music.analyser
-      const bufferLength = dataArray.length
-      if (bufferLength) {
-         // magic number
-        // const amplitude = 1 + dataArray.reduce((p, c) => p + c) / bufferLength / 512
-        const amplitude = 1 + dataArray[8] / 512
-        plane.scale.set(amplitude, amplitude, 0)
-      }
+    this.#fns.forEach(fn => {
+      fn(deltaTime)
     })
   }
 
   destroy() {
-    this.#scene.traverse(child => {
+    this.scene.traverse(child => {
       if (child.isMesh) {
         child.geometry.dispose()
         for (const key in child.material) {

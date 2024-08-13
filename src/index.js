@@ -38,8 +38,8 @@ class App {
 
     this.time.on('tick', this.update)
 
-    this.loader.on('loaded', (sources) => {
-      this.world.load(sources)
+    this.loader.on('loaded', (resources) => {
+      this.world.load(resources)
     })
 
     window.addEventListener('beforeunload', this.destroy, false)

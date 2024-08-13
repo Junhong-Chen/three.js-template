@@ -1,11 +1,8 @@
 import GUI from 'lil-gui'
 
 export default class Debugger {
-  #gui = null
 
-  get gui() {
-    return this.#gui
-  }
+  static gui
 
   constructor() {
     this.init()
@@ -18,18 +15,18 @@ export default class Debugger {
 
   hashChange = () => {
     if (location.hash.includes('debug')) {
-      this.#gui = new GUI()
-    } else if (this.#gui) {
-      this.#gui.destroy()
-      this.#gui = null
+      Debugger.gui = new GUI()
+    } else if (Debugger.gui) {
+      Debugger.gui.destroy()
+      Debugger.gui = null
     }
   }
 
   destroy() {
     window.removeEventListener('hashchange', this.hashChange, false)
-    if (this.#gui) {
-      this.#gui.destroy()
-      this.#gui = null
+    if (Debugger.gui) {
+      Debugger.gui.destroy()
+      Debugger.gui = null
     }
   }
 }
