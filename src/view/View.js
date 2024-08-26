@@ -1,5 +1,4 @@
 import Light from "./Light"
-import Music from "../audio/music"
 import Floor from "./Floor"
 import Player from "./Player"
 import Terrains from "./Terrains"
@@ -8,6 +7,7 @@ export default class View {
   constructor(app) {
     this.scene = app.scene
     this.clock = app.clock
+    this.music = app.music
 
     this.resources
 
@@ -15,7 +15,6 @@ export default class View {
   }
 
   init() {
-    this.music = new Music()
     this.light = new Light(this)
     this.floor = new Floor(this)
     this.terrains = new Terrains()
