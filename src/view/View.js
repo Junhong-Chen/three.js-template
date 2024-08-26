@@ -1,14 +1,13 @@
-import Light from "./light"
-import Music from "./music"
-import Floor from "./floor"
-import Player from "./player"
+import Light from "./Light"
+import Music from "../audio/music"
+import Floor from "./Floor"
+import Player from "./Player"
+import Terrains from "./Terrains"
 
-export default class World {
-  #fns = []
-
+export default class View {
   constructor(app) {
     this.scene = app.scene
-    this.time = app.time
+    this.clock = app.clock
 
     this.resources
 
@@ -19,30 +18,16 @@ export default class World {
     this.music = new Music()
     this.light = new Light(this)
     this.floor = new Floor(this)
+    this.terrains = new Terrains()
   }
 
   load(resources) {
-
-    this.res = resources
-    this.player = new Player(this)
+    this.player = new Player(this, resources)
   }
 
-  addUpdateFn(fn) {
-    this.#fns.push(fn)
-  }
-
-  removeUpdateFn(fn) {
-    const i = this.#fns.findIndex(f => f === fn)
-
-    if (i > -1) {
-      this.#fns.splice(i, 1)
-    }
-  }
-
-  update(deltaTime) {
-    this.#fns.forEach(fn => {
-      fn(deltaTime)
-    })
+  update(deltaTime, elapsedTime) {
+    if (this.player) this.player.update(deltaTime, elapsedTime)
+    this.floor.update(deltaTime, elapsedTime)
   }
 
   destroy() {

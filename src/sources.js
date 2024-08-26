@@ -7,13 +7,6 @@ export default [
   //     "textures/floor-normal.jpg"
   //   ]
   // },
-  // {
-  //   name: "fox",
-  //   type: "gltf",
-  //   paths: [
-  //     "models/fox.glb"
-  //   ]
-  // },
   {
     name: "brainStem", // 玩家
     type: "gltf",
